@@ -1,0 +1,121 @@
+body {
+    background-color: rgb(20, 20, 20);
+    color: white;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: 100vw;
+    grid-template-rows: max-content auto max-content;
+    height: 100vh;
+
+    display: fixed;
+    top: 0;
+    left: 0;
+
+    transition: filter 0.2s;
+}
+
+* {
+    font-family: 'Consolas', monospace;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: monospace;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1ch;
+    align-items: center;
+}
+
+.flex-vertical {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    gap: 1em;
+}
+
+.flex-horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 1ch;
+}
+
+button,
+input {
+    background-color: rgba(255, 255, 255, 0.1);
+    outline: none;
+    border: rgba(255, 255, 255, 0.15) solid 1px;
+    color: white;
+    font-family: inherit;
+    border-radius: 0.5ch;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1ch;
+    justify-content: center;
+}
+
+input {
+    padding: 1ch;
+}
+
+button {
+    padding: 1ch 3ch;
+    cursor: pointer;
+}
+
+button:hover,
+input:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: rgba(255, 255, 255, 0.2) solid 1px;
+}
+
+header {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom: rgba(255, 255, 255, 0.15) solid 1px;
+    padding: 1ch;
+}
+
+footer {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-top: rgba(255, 255, 255, 0.15) solid 1px;
+    padding: 0.5ch;
+    font-size: small;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1ch;
+}
+
+.icon {
+    font-size: 1.25em;
+}
+
+.content {
+    padding: 1em;
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+.key {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: rgba(255, 255, 255, 0.15) solid 1px;
+    padding: 0.2ch 0.5ch;
+    border-radius: 0.5ch;
+    width: min-content;
+}
+
+p {
+    max-width: 25vw;
+    line-height: 1.5em;
+}

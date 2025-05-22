@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>picocontrol</title>
+        <link rel="stylesheet" href="material-icons.css" />
+        <link rel="stylesheet" href="style.css" />
+        <script src="index.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <h1>
+                <span class="icon">settings_remote</span>
+                picocontrol
+            </h1>
+        </header>
+        <div class="content">
+            <div class="flex-vertical mouse">
+                <h2>
+                    <span class="icon">mouse</span>
+                    Manual remote control
+                </h2>
+                <p>
+                    To control the mouse remotely, press <span class="key">CTRL</span> + <span class="key">ALT</span>
+                    + <span class="key">SHIFT</span> at the same time. This toggles the remote control mode.
+                </p>
+
+                <p>
+                    Note that you may first have to click the website first for the keyboard shortcut to
+                    work.
+                </p>
+            </div>
+            <div class="flex-vertical">
+                <h2>
+                    <span class="icon">apps</span>
+                    Schnellaktionen
+                </h2>
+                <button onclick="quickAction('lock')">
+                    <span class="icon">lock</span>
+                    Lock PC
+                </button>
+                <div class="flex-horizontal">
+                    <input type="text" id="execute-input" value="notepad" />
+                    <button
+                        onclick="quickAction('exec', document.getElementById('execute-input').value)"
+                    >
+                        <span class="icon">play_arrow</span>
+                        Execute command
+                    </button>
+                </div>
+                <button onclick="quickAction('alttab')">
+                    <span class="icon">swap_horiz</span>
+                    Alt-Tab (Change window)
+                </button>
+                <button onclick="quickAction('altf4')">
+                    <span class="icon">cancel</span>
+                    Alt-F4 (Close window)
+                </button>
+            </div>
+        </div>
+        <footer>
+            <span class="icon">memory</span>
+            picocontrol by Gabriel Heinzer
+        </footer>
+    </body>
+</html>
