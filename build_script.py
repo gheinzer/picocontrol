@@ -10,6 +10,15 @@ FS_BINARY_PATH = os.path.join(env.subst("$BUILD_DIR"), FS_BINARY_NAME)
 FS_BINARY_SOURCE_FOLDER = "./web"
 
 def buildFsBinary(source, target):
+    print("Writing version file...")
+    with open(os.path.join(source, "version.txt"), "w+") as versionFile:
+        # Get version from git
+        try:
+            version = subprocess.check_output(["git", "describe", "--tags"]).strip().decode("utf-8")
+        except subprocess.CalledProcessError:
+            version = "version could not be determined at build time"
+        versionFile.write(version)
+
     print("Building file system binary...")
 
     fileTable = {}
