@@ -4,16 +4,15 @@
 #include <Mouse.h>
 #include <WebFS.h>
 #include <WebSocketsServer.h>
+#include <RP2040.h>
+#include <DNSServer.h>
 
 WiFiServer http(80);
 WebSocketsServer websocket(81);
+DNSServer dns;
+IPAddress apIP(10, 1, 1, 1);
 
 std::vector<WiFiClient> clients;
-
-void debug(const char* test) {
-    Keyboard.write((const uint8_t*)test, strlen(test));
-    Keyboard.flush();
-}
 
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, size_t length) {
@@ -158,7 +157,10 @@ void setup() {
 
     // Initialize network connection over WiFi
     WiFi.setHostname("picocontrol");
-    WiFi.beginAP("picocontrol");
+    arduino::String ssid = "picocontrol_" + arduino::String(rp2040.getChipID()).substring(0, 6);
+    
+    WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+    WiFi.beginAP(ssid.c_str());
 
     // Initialize the USB HID interface
     Keyboard.begin(KeyboardLayout_de_DE);
@@ -169,6 +171,8 @@ void setup() {
     http.begin();
     websocket.begin();
     websocket.onEvent(webSocketEvent);
+    dns.start(53, "*", WiFi.softAPIP());
+    dns.setErrorReplyCode(DNSReplyCode::NoError);
 }
 
 void loop() {
@@ -185,31 +189,44 @@ void loop() {
         }
 
         arduino::String requestLine = client.readStringUntil('\n');
+        arduino::String host = "abc.internal";
         while(1) {
             arduino::String req = client.readStringUntil('\n');
-            if(req == "\r") break;
+            if(req.startsWith("Host: ")) {
+                host = req.substring(req.indexOf(' ') + 1, -1);
+                host.replace("\r", "");
+            } else if(req == "\r") break;
         }
 
-        arduino::String path = requestLine.substring(requestLine.indexOf(' ') + 2, requestLine.lastIndexOf(' '));
-        if(path.isEmpty()) path = "index.html";
-        
-        // send a standard http response header
-        WebFS_Handle* file = WebFS.getFile(std::string(path.c_str()));
-        if(file == 0) {
-            client.println("HTTP/1.1 404 Not Found");
-            client.println("Content-Type: text/plain");
-            client.println("Connection: close");  // the connection will be closed after completion of the response
-            client.println();
-            client.print("File not found: ");
-            client.println(path);
-        } else {
-            client.println("HTTP/1.1 200 OK");
-            client.print("Content-Type: ");
-            client.println(file->mime_type.c_str());
-            client.println("Connection: close");  // the connection will be closed after completion of the response
-            client.println();
+        if(host == "picocontrol.internal") {
+            arduino::String path = requestLine.substring(requestLine.indexOf(' ') + 2, requestLine.lastIndexOf(' '));
+            if(path.isEmpty()) path = "index.html";
+            
+            // send a standard http response header
+            WebFS_Handle* file = WebFS.getFile(std::string(path.c_str()));
+            if(file == 0) {
+                client.println("HTTP/1.1 404 Not Found");
+                client.println("Content-Type: text/plain");
+                client.println("Connection: close");  // the connection will be closed after completion of the response
+                client.println();
+                client.print("File not found: ");
+                client.println(path);
+            } else {
+                client.println("HTTP/1.1 200 OK");
+                client.print("Content-Type: ");
+                client.println(file->mime_type.c_str());
+                client.println("Connection: close");  // the connection will be closed after completion of the response
+                client.println();
 
-            client.write(file->content, file->size);
+                client.write(file->content, file->size);
+            }   
+        } else {
+            client.println("HTTP/1.1 302 Found");
+            client.println("Content-Type: text/plain");
+            client.println("Location: http://picocontrol.internal/");
+            client.println("Connection: close");  // the connection will be closed after completion of the response
+            client.println();
+            client.print("You are begin redirected...");
         }
         client.println();
         client.flush();
@@ -218,4 +235,5 @@ void loop() {
     }
 
     websocket.loop();
+    dns.processNextRequest();
 }
