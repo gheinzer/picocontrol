@@ -1,6 +1,9 @@
 name: PlatformIO CI
 
-on: [push]
+on:
+  push:
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -22,3 +25,12 @@ jobs:
 
       - name: Build PlatformIO Project
         run: pio run
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: .pio/build/rpipicow/firmware.uf2
+          asset_name: picocontrol_${{ github.ref }}.uf2
+          tag: ${{ github.ref }}
+          overwrite: true
