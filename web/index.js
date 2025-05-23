@@ -147,14 +147,9 @@ document.addEventListener('keydown', async (event) => {
     }
 })
 
-// Read the version file
-fetch('version.txt')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('footer-version').innerText = data;
-    })
-    .catch(error => {
-        console.error('Error fetching version:', error);
-    });
+var versionRequest = new XMLHttpRequest();
+versionRequest.open("GET", "version.txt", false); // false for synchronous request
+versionRequest.send(null);
+document.getElementById('footer-version').innerText = versionRequest.responseText;
 
 openWebsocket();
