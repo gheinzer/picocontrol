@@ -6,12 +6,43 @@
 #include <WebSocketsServer.h>
 #include <RP2040.h>
 #include <DNSServer.h>
+#include <KeyboardBLE.h>
+#include <MouseBLE.h>
 
 WiFiServer http(80);
 WebSocketsServer websocket(81);
 DNSServer dns;
 IPAddress apIP(10, 1, 1, 1);
 
+void keyboard_press(uint8_t key) {
+    Keyboard.press(key);
+    KeyboardBLE.press(key);
+}
+
+void keyboard_release(uint8_t key) {
+    Keyboard.release(key);
+    KeyboardBLE.release(key);
+}
+
+void keyboard_print(arduino::String value) {
+    Keyboard.print(value);
+    KeyboardBLE.print(value);
+}
+
+void mouse_press(uint8_t key) {
+    Mouse.press(key);
+    MouseBLE.press(key);
+}
+
+void mouse_release(uint8_t key) {
+    Mouse.release(key);
+    MouseBLE.release(key);
+}
+
+void mouse_move(int x, int y, signed char wheel) {
+    Mouse.move(x, y, wheel);
+    MouseBLE.move(x, y, wheel);
+}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, size_t length) {
     if(type == WStype_TEXT) {
@@ -98,9 +129,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, siz
             else ignore = true;
             
             if(request == "key.down" && !ignore) {
-                Keyboard.press(key_code);
+                keyboard_press(key_code);
             } else if(request == "key.up" && !ignore) {
-                Keyboard.release(key_code);
+                keyboard_release(key_code);
             }
         } else if(request == "mouse.down" || request == "mouse.up") {
             unsigned int button = value.toInt();
@@ -110,9 +141,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, siz
             else if(button == 2) mouse_button = MOUSE_RIGHT;
 
             if(request == "mouse.down") {
-                Mouse.press(mouse_button);
+                mouse_press(mouse_button);
             } else {
-                Mouse.release(mouse_button);
+                mouse_release(mouse_button);
             }
         } else if(request == "mouse.move") {
             unsigned int delimiter_pos = value.indexOf(",");
@@ -120,32 +151,32 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, siz
             signed int movement_x = value.substring(0, delimiter_pos).toInt();
             signed int movement_y = value.substring(delimiter_pos + 1, last_delimiter_pos).toInt();
             signed int movement_wheel = value.substring(last_delimiter_pos + 1, -1).toInt();
-            Mouse.move(movement_x, movement_y, movement_wheel);
+            mouse_move(movement_x, movement_y, movement_wheel);
         } else if(request == "actions.lock") {
-            Keyboard.press(KEY_LEFT_GUI);
-            Keyboard.press('l');
+            keyboard_press(KEY_LEFT_GUI);
+            keyboard_press('l');
             delay(5);
-            Keyboard.release(KEY_LEFT_GUI);
-            Keyboard.release('l');
+            keyboard_release(KEY_LEFT_GUI);
+            keyboard_release('l');
         } else if(request == "actions.alttab") {
-            Keyboard.press(KEY_LEFT_ALT);
-            Keyboard.press(KEY_TAB);
+            keyboard_press(KEY_LEFT_ALT);
+            keyboard_press(KEY_TAB);
             delay(5);
-            Keyboard.release(KEY_LEFT_ALT);
-            Keyboard.release(KEY_TAB);
+            keyboard_release(KEY_LEFT_ALT);
+            keyboard_release(KEY_TAB);
         } else if(request == "actions.altf4") {
-            Keyboard.press(KEY_LEFT_ALT);
-            Keyboard.press(KEY_F4);
+            keyboard_press(KEY_LEFT_ALT);
+            keyboard_press(KEY_F4);
             delay(5);
-            Keyboard.release(KEY_LEFT_ALT);
-            Keyboard.release(KEY_F4);
+            keyboard_release(KEY_LEFT_ALT);
+            keyboard_release(KEY_F4);
         } else if(request == "actions.exec") {
-            Keyboard.press(KEY_LEFT_GUI);
-            Keyboard.press('r');
+            keyboard_press(KEY_LEFT_GUI);
+            keyboard_press('r');
             delay(5);
-            Keyboard.release(KEY_LEFT_GUI);
-            Keyboard.release('r');
-            Keyboard.print(value);
+            keyboard_release(KEY_LEFT_GUI);
+            keyboard_release('r');
+            keyboard_print(value);
         }
     }
 }
@@ -162,7 +193,9 @@ void setup() {
 
     // Initialize the USB HID interface
     Keyboard.begin(KeyboardLayout_de_DE);
+    KeyboardBLE.begin(ssid.c_str(), ssid.c_str(), KeyboardLayout_de_DE);
     Mouse.begin();
+    MouseBLE.begin(ssid.c_str(), ssid.c_str());
 
     // Initialize everything web-server-related
     WebFS.init();
