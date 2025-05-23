@@ -12,8 +12,6 @@ WebSocketsServer websocket(81);
 DNSServer dns;
 IPAddress apIP(10, 1, 1, 1);
 
-std::vector<WiFiClient> clients;
-
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, size_t length) {
     if(type == WStype_TEXT) {
@@ -178,15 +176,6 @@ void setup() {
 void loop() {
     while(http.hasClient()) {
         WiFiClient client = http.accept();
-        clients.push_back(client);
-    }
-
-    for(auto it = clients.begin(); it != clients.end();) {
-        WiFiClient& client = *it;
-        if(!client.connected()) {
-            clients.erase(it);
-            continue;
-        }
 
         arduino::String requestLine = client.readStringUntil('\n');
         arduino::String host = "abc.internal";
@@ -228,8 +217,11 @@ void loop() {
             client.println();
             client.print("You are begin redirected...");
         }
+
         client.println();
         client.flush();
+
+        delay(1); // Give the browser some time to receive
 
         client.stop();
     }
