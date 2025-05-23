@@ -29,7 +29,10 @@ function toggleUSB() {
 
 function openWebsocket() {
     ws = new WebSocket("ws:/" + location.hostname + ":81");
-    ws.onopen = toggleBluetooth;
+    ws.onopen = () => {
+        toggleBluetooth();
+        toggleUSB();
+    };
 }
 
 function quickAction(action, value) {
