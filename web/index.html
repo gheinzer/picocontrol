@@ -4,21 +4,20 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>picocontrol</title>
-        <link rel="stylesheet" href="material-icons.css" />
         <link rel="stylesheet" href="style.css" />
         <script src="index.js" defer></script>
     </head>
     <body>
         <header>
             <h1>
-                <span class="icon">settings_remote</span>
+                <img src="icons/settings_remote.svg" alt="" class="icon">
                 picocontrol
             </h1>
         </header>
         <div class="content">
             <div class="flex-vertical mouse">
                 <h2>
-                    <span class="icon">mouse</span>
+                    <img src="icons/mouse.svg" alt="" class="icon">
                     Manual remote control
                 </h2>
                 <p>
@@ -33,11 +32,11 @@
             </div>
             <div class="flex-vertical">
                 <h2>
-                    <span class="icon">apps</span>
+                    <img src="icons/apps.svg" alt="" class="icon">
                     Schnellaktionen
                 </h2>
                 <button onclick="quickAction('lock')">
-                    <span class="icon">lock</span>
+                    <img src="icons/lock.svg" alt="" class="icon">
                     Lock PC
                 </button>
                 <div class="flex-horizontal">
@@ -45,22 +44,22 @@
                     <button
                         onclick="quickAction('exec', document.getElementById('execute-input').value)"
                     >
-                        <span class="icon">play_arrow</span>
+                        <img src="icons/play_arrow.svg" alt="" class="icon">
                         Execute command
                     </button>
                 </div>
                 <button onclick="quickAction('alttab')">
-                    <span class="icon">swap_horiz</span>
+                    <img src="icons/swap_horiz.svg" alt="" class="icon">
                     Alt-Tab (Change window)
                 </button>
                 <button onclick="quickAction('altf4')">
-                    <span class="icon">cancel</span>
+                    <img src="icons/cancel.svg" alt="" class="icon">
                     Alt-F4 (Close window)
                 </button>
             </div>
         </div>
         <footer>
-            <span class="icon">memory</span>
+            <img src="icons/bolt.svg" alt="" class="icon">
             picocontrol by Gabriel Heinzer
         </footer>
     </body>
