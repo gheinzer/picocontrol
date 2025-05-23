@@ -6,8 +6,30 @@ let pointerLockActive = false;
 let activeKeyboardKeys = new Set();
 let activeMouseKeys = new Set();
 
+let bluetoothActive = false;
+let usbActive = false;
+
+function toggleBluetooth() {
+    bluetoothActive = !bluetoothActive;
+    quickAction('set-bluetooth', bluetoothActive ? 'on' : 'off');
+    if(bluetoothActive)
+        document.getElementById('bluetooth-toggle').classList.add('checked');
+    else
+        document.getElementById('bluetooth-toggle').classList.remove('checked');
+}
+
+function toggleUSB() {
+    usbActive = !usbActive;
+    quickAction('set-usb', usbActive ? 'on' : 'off');
+    if(usbActive)
+        document.getElementById('usb-toggle').classList.add('checked');
+    else
+        document.getElementById('usb-toggle').classList.remove('checked');
+}
+
 function openWebsocket() {
     ws = new WebSocket("ws:/" + location.hostname + ":81");
+    ws.onopen = toggleBluetooth;
 }
 
 function quickAction(action, value) {

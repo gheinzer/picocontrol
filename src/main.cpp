@@ -14,34 +14,37 @@ WebSocketsServer websocket(81);
 DNSServer dns;
 IPAddress apIP(10, 1, 1, 1);
 
+bool bluetooth_enabled = false;
+bool usb_enabled = false;
+
 void keyboard_press(uint8_t key) {
-    Keyboard.press(key);
-    KeyboardBLE.press(key);
+    if(usb_enabled) Keyboard.press(key);
+    if(bluetooth_enabled) KeyboardBLE.press(key);
 }
 
 void keyboard_release(uint8_t key) {
-    Keyboard.release(key);
-    KeyboardBLE.release(key);
+    if(usb_enabled) Keyboard.release(key);
+    if(bluetooth_enabled) KeyboardBLE.release(key);
 }
 
 void keyboard_print(arduino::String value) {
-    Keyboard.print(value);
-    KeyboardBLE.print(value);
+    if(usb_enabled) Keyboard.print(value);
+    if(bluetooth_enabled) KeyboardBLE.print(value);
 }
 
 void mouse_press(uint8_t key) {
-    Mouse.press(key);
-    MouseBLE.press(key);
+    if(usb_enabled) Mouse.press(key);
+    if(bluetooth_enabled) MouseBLE.press(key);
 }
 
 void mouse_release(uint8_t key) {
-    Mouse.release(key);
-    MouseBLE.release(key);
+    if(usb_enabled) Mouse.release(key);
+    if(bluetooth_enabled) MouseBLE.release(key);
 }
 
 void mouse_move(int x, int y, signed char wheel) {
-    Mouse.move(x, y, wheel);
-    MouseBLE.move(x, y, wheel);
+    if(usb_enabled) Mouse.move(x, y, wheel);
+    if(bluetooth_enabled) MouseBLE.move(x, y, wheel);
 }
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, size_t length) {
@@ -177,6 +180,18 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload_chararray, siz
             keyboard_release(KEY_LEFT_GUI);
             keyboard_release('r');
             keyboard_print(value);
+        } else if(request == "actions.set-bluetooth") {
+            bluetooth_enabled = value == "on" ? true : false;
+            if(!bluetooth_enabled) {
+                MouseBLE.release(MOUSE_ALL);
+                KeyboardBLE.releaseAll();
+            }
+        } else if(request == "actions.set-usb") {
+            usb_enabled = value == "on" ? true : false;
+            if(!usb_enabled) {
+                Mouse.release(MOUSE_ALL);
+                Keyboard.releaseAll();
+            }
         }
     }
 }
